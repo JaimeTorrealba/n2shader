@@ -23,6 +23,6 @@ useState("demo-page", () => page.value);
 
 <template>
   <ClientOnly>
-    <component :is="component" v-if="page" class="w-full h-full min-h-75" />
+    <component :is="component" v-if="page" />
   </ClientOnly>
 </template>

@@ -1,4 +1,5 @@
 export const useImageTransitionsStore = defineStore("imageTransitions", () => {
+  const currentFragment = ref(0);
   const next = ref<(() => void) | null>(null);
   const previous = ref<(() => void) | null>(null);
   const swapShader = ref<((index: number) => void) | null>(null);
@@ -9,5 +10,5 @@ export const useImageTransitionsStore = defineStore("imageTransitions", () => {
     swapShader.value = fns.swapShader;
   }
 
-  return { next, previous, swapShader, register };
+  return { currentFragment, next, previous, swapShader, register };
 });

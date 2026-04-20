@@ -2,10 +2,10 @@
 const store = useImageTransitionsStore();
 
 const shaderOptions = [
-  { label: "Effect 1", value: 0 },
-  { label: "Effect 2", value: 1 },
-  { label: "Effect 3", value: 2 },
-  { label: "Effect 4", value: 3 },
+  { label: "Dissolve down", value: 0 },
+  { label: "Center appear", value: 1 },
+  { label: "Center dissolve", value: 2 },
+  { label: "Dissolve left", value: 3 },
 ];
 
 const selectedShader = ref(0);
@@ -16,9 +16,9 @@ watch(selectedShader, (value) => {
 </script>
 
 <template>
-  <section class="bg-gray-800 py-2 rounded-lg flex flex-col gap-1">
-    <h2 class="text-white text-lg font-semibold mb-1">Image Transitions tweaks</h2>
-    <div class="flex justify-between gap-0.5">
+  <section class="bg-gray-800 p-2 rounded-lg flex flex-col gap-2">
+    <h2 class="text-white text-lg font-semibold mb-1 text-center">Image Transitions tweaks</h2>
+    <div class="flex justify-around gap-0.5">
       <UButton @click="store.next?.()">Next image</UButton>
       <UButton @click="store.previous?.()">Previous image</UButton>
     </div>
