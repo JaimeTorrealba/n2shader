@@ -60,3 +60,4 @@ When the sidebar opens/closes, `sidebarKey` (a global `useState`) is incremented
 - Tailwind CSS v4
 - `@nuxt/ui` provides the component library (buttons, sidebar, etc.)
 - All UI uses greyscale palette with white/opacity utilities (`text-white/70`, `bg-black/30`, etc.)
+- USE nuxtUI components by default

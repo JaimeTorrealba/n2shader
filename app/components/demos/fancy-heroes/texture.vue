@@ -98,6 +98,7 @@ onMounted(async () => {
   material.normalMap = textures[2]!;
   material.normalScale.set(0.5, 0.5);
   material.roughnessMap = textures[3]!;
+  material.roughness = 0.5;
   material.needsUpdate = true;
   resize();
 
@@ -123,7 +124,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded" noVignette>
+  <DemosPlaceholdersHero :is-loaded="isLoaded" noVignette align="left">
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0;" />
   </DemosPlaceholdersHero>
 </template>

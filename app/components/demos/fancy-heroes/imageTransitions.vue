@@ -142,7 +142,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded">
+  <DemosPlaceholdersHero :is-loaded="isLoaded" navShowCta >
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0;" />
   </DemosPlaceholdersHero>
 </template>
