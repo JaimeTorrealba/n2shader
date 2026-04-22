@@ -9,6 +9,7 @@ import {
 import { useWindowSize } from "@vueuse/core";
 
 const { width, height } = useWindowSize();
+const textureStore = useFancyHeroesTextureStore();
 
 const canvasEl = ref<HTMLCanvasElement | null>(null);
 const isLoaded = ref(false);
@@ -30,6 +31,22 @@ const resize = () => {
   const w = canvasEl.value.clientWidth;
   const h = canvasEl.value.clientHeight;
   renderer.setSize(w, h, false);
+
+  const canvasAspect = w / h;
+  const planeAspect = 16 / 9;
+  let halfW: number, halfH: number;
+  if (canvasAspect > planeAspect) {
+    halfW = 8;
+    halfH = 8 / canvasAspect;
+  } else {
+    halfH = 4.5;
+    halfW = 4.5 * canvasAspect;
+  }
+  camera.left = -halfW;
+  camera.right = halfW;
+  camera.top = halfH;
+  camera.bottom = -halfH;
+  camera.updateProjectionMatrix();
 };
 
 watch([width, height], resize);
@@ -83,6 +100,12 @@ onMounted(async () => {
   material.roughnessMap = textures[3]!;
   material.needsUpdate = true;
   resize();
+
+  watch(() => textureStore.aoMapIntensity, (v) => { material.aoMapIntensity = v; });
+  watch(() => textureStore.normalScale, (v) => { material.normalScale.set(v, v); });
+  watch(() => textureStore.roughness, (v) => { material.roughness = v; });
+  watch(() => textureStore.lightIntensity, (v) => { light.intensity = v; });
+  watch(() => textureStore.lightColor, (v) => { light.color.set(v); });
 
   const renderLoop = () => {
     rafId = requestAnimationFrame(renderLoop);
