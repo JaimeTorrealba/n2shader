@@ -118,7 +118,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   cancelAnimationFrame(rafId);
-  canvasEl.value?.parentElement?.removeEventListener("mousemove", onMouseMove);
+canvasEl.value?.parentElement?.removeEventListener("mousemove", onMouseMove);
   renderer?.dispose();
 });
 </script>

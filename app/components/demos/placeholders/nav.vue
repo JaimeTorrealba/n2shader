@@ -2,14 +2,14 @@
 const props = defineProps<{
   showCta?: boolean;
   logoAlign?: "left" | "center";
-  detached?: boolean;
+  solidBg?: boolean;
 }>();
 
 const mobileMenuOpen = ref(false);
 
 const navClasses = computed(() =>
-  props.detached
-    ? "w-full bg-black/30 backdrop-blur-sm border-b border-white/10"
+  props.solidBg
+    ? "absolute top-0 left-0 right-0 z-50 bg-black border-b border-white/10"
     : "absolute top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-sm border-b border-white/10"
 );
 </script>

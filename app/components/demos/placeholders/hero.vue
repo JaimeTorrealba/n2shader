@@ -8,7 +8,7 @@ const props = defineProps<{
   align?: "left" | "center" | "right";
   navShowCta?: boolean;
   navLogoAlign?: "left" | "center";
-  navDetached?: boolean;
+  navSolidBg?: boolean;
 }>();
 
 const alignClasses = computed(() => ({
@@ -51,7 +51,7 @@ watch(() => props.isLoaded, (loaded) => {
     <DemosPlaceholdersNav
       :show-cta="navShowCta"
       :logo-align="navLogoAlign"
-      :detached="navDetached"
+      :solid-bg="navSolidBg"
     />
 
     <!-- Background slot (canvas, shader, etc.) -->
@@ -59,6 +59,18 @@ watch(() => props.isLoaded, (loaded) => {
 
     <!-- Vignette -->
     <div v-if="!props.noVignette" class="absolute inset-0 z-10 pointer-events-none" style="background: radial-gradient(ellipse at center, transparent 40%, black 100%);" />
+
+    <!-- Content area darkening gradient -->
+    <div
+      class="absolute inset-0 z-10 pointer-events-none"
+      :style="{
+        background: align === 'right'
+          ? 'radial-gradient(ellipse 60% 80% at 80% 50%, rgba(0,0,0,0.55) 0%, transparent 100%)'
+          : align === 'left'
+          ? 'radial-gradient(ellipse 60% 80% at 20% 50%, rgba(0,0,0,0.55) 0%, transparent 100%)'
+          : 'radial-gradient(ellipse 60% 80% at 50% 50%, rgba(0,0,0,0.55) 0%, transparent 100%)'
+      }"
+    />
 
     <!-- Hero Content -->
     <div class="absolute inset-0 flex flex-col justify-center px-4 z-20 py-16" :class="alignClasses">
@@ -70,7 +82,7 @@ watch(() => props.isLoaded, (loaded) => {
       <h1 ref="heroTitle" class="text-white/90 text-5xl font-bold leading-tight mb-6 opacity-0">
         Your Title<br />Goes Here
       </h1>
-      <p ref="heroDesc" class="text-white/60 text-lg max-w-md mb-10 opacity-0">
+      <p ref="heroDesc" class="text-white/60 text-lg max-w-md mb-10 opacity-0" style="text-shadow: 0 1px 8px rgba(0,0,0,0.9)">
         This is your hero description. Add a short sentence that summarizes what you do or offer.
       </p>
       <div ref="heroButtons" class="flex gap-4 opacity-0">
