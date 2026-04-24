@@ -31,7 +31,7 @@ const accordionItems = [
 ];
 
 const { width, height } = useWindowSize();
-const store = useModelHeroStore();
+const store = useFancyHeroesStore();
 
 const canvasEl = ref<HTMLCanvasElement | null>(null);
 const isLoaded = ref(false);

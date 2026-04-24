@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const store = useFancyHeroesTextureStore();
+const store = useFancyHeroesStore();
 const chip = computed(() => ({ backgroundColor: store.lightColor }));
 </script>
 
 <template>
-  <UCard class="h-full" variant="subtle" :ui="{ root: 'h-full flex flex-col', body: 'flex-1' }">
+  <UCard>
     <template #header>
       <h2 class="text-white text-lg font-semibold mb-1 text-center">Texture Controls</h2>
     </template>

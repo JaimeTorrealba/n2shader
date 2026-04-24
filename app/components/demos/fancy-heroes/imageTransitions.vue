@@ -19,7 +19,7 @@ interface SliderUniforms {
   resolution: IUniform<Vector4>;
 }
 
-const store = useImageTransitionsStore();
+const store = useFancyHeroesStore();
 const fragments = [fragmentEffectOne, fragmentEffectTwo, fragmentEffectThree, fragmentEffectFour];
 const current = ref(0);
 const { width, height } = useWindowSize();
@@ -44,7 +44,8 @@ const resize = () => {
   const h = canvasEl.value.clientHeight;
   renderer.setSize(w, h, false);
 
-  const imageAspect = textures[0].image.height / textures[0].image.width;
+  const img = textures[0].image as HTMLImageElement;
+  const imageAspect = img.height / img.width;
   let a1: number, a2: number;
   if (h / w > imageAspect) {
     a1 = (w / h) * imageAspect;
@@ -142,7 +143,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded" navShowCta >
-    <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0;" />
+  <DemosPlaceholdersHero :is-loaded="isLoaded" navShowCta>
+    <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
+  <section class="flex flex-col gap-2 items-center md:flex-row p-8 min-h-96">
+    <div class="w-1/2 h-full">
+      <DemosFancyHeroesImageTransitionsTweakpane />
+    </div>
+    <div class="w-1/2 h-full">TEXT</div>
+  </section>
 </template>

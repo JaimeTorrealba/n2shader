@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const store = useModelHeroStore();
+const store = useFancyHeroesStore();
 </script>
 
 <template>

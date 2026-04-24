@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const store = useImageTransitionsStore();
+const store = useFancyHeroesStore();
 
 const shaderOptions = [
   { label: "Dissolve down", value: 0 },
@@ -16,7 +16,7 @@ watch(selectedShader, (value) => {
 </script>
 
 <template>
-  <UCard variant="subtle" :ui="{ root: 'h-full flex flex-col', body: 'flex-1' }">
+  <UCard :ui="{ root: 'h-full flex flex-col', body: 'flex-1' }">
     <template #header>
       <h2 class="text-white text-lg font-semibold mb-1 text-center">Image Transitions</h2>
     </template>

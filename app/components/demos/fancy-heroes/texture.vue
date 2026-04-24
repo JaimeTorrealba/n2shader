@@ -1,26 +1,39 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import {
-  WebGLRenderer, Scene, OrthographicCamera, PlaneGeometry,
-  Mesh, TextureLoader, Texture,
-  MeshStandardMaterial, PointLight, AmbientLight,
-  ACESFilmicToneMapping, SRGBColorSpace,
+  WebGLRenderer,
+  Scene,
+  OrthographicCamera,
+  PlaneGeometry,
+  Mesh,
+  TextureLoader,
+  Texture,
+  MeshStandardMaterial,
+  PointLight,
+  AmbientLight,
+  ACESFilmicToneMapping,
+  SRGBColorSpace,
 } from "three";
 import { useWindowSize } from "@vueuse/core";
 
 const { width, height } = useWindowSize();
-const textureStore = useFancyHeroesTextureStore();
+const textureStore = useFancyHeroesStore();
 
 const canvasEl = ref<HTMLCanvasElement | null>(null);
 const isLoaded = ref(false);
 
-const imagePaths = ["/textures/bricks/color.png","/textures/bricks/ao.png", "/textures/bricks/normal.png", "/textures/bricks/roughness.png"];
+const imagePaths = [
+  "/textures/bricks/color.png",
+  "/textures/bricks/ao.png",
+  "/textures/bricks/normal.png",
+  "/textures/bricks/roughness.png",
+];
 
 let renderer: WebGLRenderer;
 let scene: Scene;
 let camera: OrthographicCamera;
 let mesh: Mesh;
-let material : MeshStandardMaterial;
+let material: MeshStandardMaterial;
 let textures: Texture[] = [];
 let rafId: number;
 let light: PointLight;
@@ -90,7 +103,7 @@ onMounted(async () => {
   container.addEventListener("mousemove", onMouseMove);
 
   const loader = new TextureLoader();
-  textures = await Promise.all(imagePaths.map(p => loader.loadAsync(p)));
+  textures = await Promise.all(imagePaths.map((p) => loader.loadAsync(p)));
   isLoaded.value = true;
   material.map = textures[0]!;
   material.aoMap = textures[1]!;
@@ -102,29 +115,59 @@ onMounted(async () => {
   material.needsUpdate = true;
   resize();
 
-  watch(() => textureStore.aoMapIntensity, (v) => { material.aoMapIntensity = v; });
-  watch(() => textureStore.normalScale, (v) => { material.normalScale.set(v, v); });
-  watch(() => textureStore.roughness, (v) => { material.roughness = v; });
-  watch(() => textureStore.lightIntensity, (v) => { light.intensity = v; });
-  watch(() => textureStore.lightColor, (v) => { light.color.set(v); });
+  watch(
+    () => textureStore.aoMapIntensity,
+    (v) => {
+      material.aoMapIntensity = v;
+    }
+  );
+  watch(
+    () => textureStore.normalScale,
+    (v) => {
+      material.normalScale.set(v, v);
+    }
+  );
+  watch(
+    () => textureStore.roughness,
+    (v) => {
+      material.roughness = v;
+    }
+  );
+  watch(
+    () => textureStore.lightIntensity,
+    (v) => {
+      light.intensity = v;
+    }
+  );
+  watch(
+    () => textureStore.lightColor,
+    (v) => {
+      light.color.set(v);
+    }
+  );
 
   const renderLoop = () => {
     rafId = requestAnimationFrame(renderLoop);
     renderer.render(scene, camera);
   };
   renderLoop();
-
 });
 
 onUnmounted(() => {
   cancelAnimationFrame(rafId);
-canvasEl.value?.parentElement?.removeEventListener("mousemove", onMouseMove);
+  canvasEl.value?.parentElement?.removeEventListener("mousemove", onMouseMove);
   renderer?.dispose();
 });
 </script>
 
 <template>
   <DemosPlaceholdersHero :is-loaded="isLoaded" noVignette align="left">
-    <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0;" />
+    <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
+  <section class="flex flex-col gap-2 items-center md:flex-row p-8 min-h-96">
+    <div class="w-1/2 h-full">
+      <DemosFancyHeroesTextureTweakpane />
+    </div>
+    <div class="w-1/2 h-full">TEXT</div>
+  </section>
 </template>
