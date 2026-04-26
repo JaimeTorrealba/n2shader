@@ -2,12 +2,11 @@
 
 <template>
   <div class="w-full">
-    <DemosFancyHeroesBackgrounds />
     <DemosFancyHeroesModelHero />
-    SEPARATOR
+    <USeparator color="primary" class="mb-8" />
     <DemosFancyHeroesImageTransitions />
-    SEPARATOR
+    <USeparator color="primary" class="mb-8" />
     <DemosFancyHeroesTexture />
-    SEPARATOR
+    <USeparator color="primary" class="mb-8" />
   </div>
 </template>

@@ -164,10 +164,5 @@ onUnmounted(() => {
   <DemosPlaceholdersHero :is-loaded="isLoaded" noVignette align="left">
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
-  <section class="flex flex-col gap-2 items-center md:flex-row p-8 min-h-96">
-    <div class="w-1/2 h-full">
-      <DemosFancyHeroesTextureTweakpane />
-    </div>
-    <div class="w-1/2 h-full">TEXT</div>
-  </section>
+  <DemosFancyHeroesTextureTweakpane />
 </template>

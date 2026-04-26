@@ -15,20 +15,7 @@ import { useWindowSize } from "@vueuse/core";
 
 const MODEL_PATH = "/models/bosh_drill.glb";
 
-const accordionItems = [
-  {
-    label: "When is this hero a good fit?",
-    content: "This hero works best for brands that sell or showcase a physical product — hardware, consumer electronics, industrial equipment, furniture, or anything with a distinctive 3D form. If your product's shape and materiality are part of its value proposition, putting it front and center in three dimensions is more convincing than a photo.",
-  },
-  {
-    label: "What interactions and animations are possible?",
-    content: "The model can auto-rotate, respond to mouse movement via parallax, or be driven by scroll position. You can also trigger animations baked into the GLTF file — product assembly sequences, exploded views, color variant swaps, or state transitions (open/closed, folded/unfolded). Point lights can track the cursor to give the impression the user is inspecting the object with a flashlight.",
-  },
-  {
-    label: "How does it perform on mobile and other devices?",
-    content: "WebGL is supported on all modern mobile browsers. Performance scales with device — on lower-end phones you may want to reduce geometry detail, disable shadows, and cap the pixel ratio at 1. The parallax effect automatically degrades gracefully since it relies on mousemove, which has no equivalent on touch; you can substitute a subtle idle sway animation instead.",
-  },
-];
+
 
 const { width, height } = useWindowSize();
 const store = useFancyHeroesStore();
@@ -160,14 +147,5 @@ onUnmounted(() => {
   <DemosPlaceholdersHero :is-loaded="isLoaded" navSolidBg align="right">
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
-  <section class="flex flex-col gap-2 items-start md:flex-row p-8 min-h-96">
-    <div class="w-1/2 h-full">
-      <DemosFancyHeroesModelHeroTweakpane />
-    </div>
-    <div class="w-1/2 h-full">
-      <UCard>
-        <UAccordion :items="accordionItems" />
-      </UCard>
-    </div>
-  </section>
+  <DemosFancyHeroesModelHeroTweakpane />
 </template>
