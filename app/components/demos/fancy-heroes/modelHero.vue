@@ -15,8 +15,6 @@ import { useWindowSize } from "@vueuse/core";
 
 const MODEL_PATH = "/models/bosh_drill.glb";
 
-
-
 const { width, height } = useWindowSize();
 const store = useFancyHeroesStore();
 
@@ -144,7 +142,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded" navSolidBg align="right">
+  <DemosPlaceholdersHero title="Real-time 3D models" description="lorem ipsun here for now" :is-loaded="isLoaded" navSolidBg align="right">
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
   <DemosFancyHeroesModelHeroTweakpane />

@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const props = defineProps<{
+  title: string;
+  description: string;
   isLoaded: boolean;
   noVignette?: boolean;
   align?: "left" | "center" | "right";
@@ -17,29 +22,43 @@ const alignClasses = computed(() => ({
   right: "items-end text-right",
 }[props.align ?? "center"]));
 
+const heroSection = ref<HTMLElement | null>(null);
 const heroTitle = ref<HTMLElement | null>(null);
 const heroDesc = ref<HTMLElement | null>(null);
 const heroButtons = ref<HTMLElement | null>(null);
 const heroBadge = ref<HTMLElement | null>(null);
 
+let trigger: ScrollTrigger | null = null;
+let animated = false;
+
+function playAnimation() {
+  if (animated) return;
+  animated = true;
+  gsap.fromTo(
+    [heroBadge.value, heroTitle.value, heroDesc.value, heroButtons.value],
+    { y: 24 },
+    { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.15 }
+  );
+}
+
+onMounted(() => {
+  trigger = ScrollTrigger.create({
+    trigger: heroSection.value,
+    start: "top 85%",
+    onEnter: () => { if (props.isLoaded) playAnimation(); },
+  });
+});
+
 watch(() => props.isLoaded, (loaded) => {
   if (!loaded) return;
-  gsap.fromTo(
-    [heroTitle.value, heroDesc.value, heroButtons.value, heroBadge.value],
-    { y: 24 },
-    {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      ease: "power3.out",
-      stagger: 0.15,
-    }
-  );
+  if (heroSection.value && ScrollTrigger.isInViewport(heroSection.value)) playAnimation();
 });
+
+onUnmounted(() => { trigger?.kill(); });
 </script>
 
 <template>
-  <section class="relative w-full min-h-125 overflow-hidden">
+  <section ref="heroSection" class="relative w-full min-h-125 overflow-hidden">
     <Transition name="fade">
       <div v-if="!isLoaded" class="absolute inset-0 z-30 bg-black flex items-center justify-center gap-2">
         <span class="w-2 h-2 rounded-full bg-white/40 animate-bounce [animation-delay:-0.3s]" />
@@ -80,10 +99,10 @@ watch(() => props.isLoaded, (loaded) => {
         </UBadge>
       </div>
       <h1 ref="heroTitle" class="text-white/90 text-5xl font-bold leading-tight mb-6 opacity-0">
-        Your Title<br />Goes Here
+        {{ title }}
       </h1>
       <p ref="heroDesc" class="text-white/60 text-lg max-w-md mb-10 opacity-0" style="text-shadow: 0 1px 8px rgba(0,0,0,0.9)">
-        This is your hero description. Add a short sentence that summarizes what you do or offer.
+        {{ description }}
       </p>
       <div ref="heroButtons" class="flex gap-4 opacity-0">
         <button class="px-6 py-2.5 bg-white/20 text-white/90 border border-white/30 hover:bg-white/30 transition-colors rounded-sm text-sm">

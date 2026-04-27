@@ -7,6 +7,6 @@
     <DemosFancyHeroesImageTransitions />
     <USeparator color="primary" class="mb-8" />
     <DemosFancyHeroesTexture />
-    <USeparator color="primary" class="mb-8" />
+    <!-- <USeparator color="primary" class="mb-8" /> -->
   </div>
 </template>

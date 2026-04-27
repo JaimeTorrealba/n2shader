@@ -161,7 +161,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded" noVignette align="left">
+  <DemosPlaceholdersHero title="Realistic textures" description="lorem ipsun here for now" :is-loaded="isLoaded" noVignette align="left">
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
   <DemosFancyHeroesTextureTweakpane />

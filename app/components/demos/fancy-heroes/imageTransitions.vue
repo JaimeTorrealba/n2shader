@@ -143,7 +143,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DemosPlaceholdersHero :is-loaded="isLoaded" navShowCta>
+  <DemosPlaceholdersHero title="GPU image manipulation" description="lorem ipsun here for now" :is-loaded="isLoaded" navShowCta>
     <canvas ref="canvasEl" class="absolute inset-0 w-full h-full" style="z-index: 0" />
   </DemosPlaceholdersHero>
   <DemosFancyHeroesImageTransitionsTweakpane />
