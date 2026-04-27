@@ -1,4 +1,9 @@
-# Collection of creative heroes for inspiration
+---
+title: Fancy a hero?
+img: ""
+---
+
+# Fancy a hero?
 
 ::ds-contact-button
 ::
