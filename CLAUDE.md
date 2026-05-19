@@ -1,63 +1,60 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Commands
 
 ```bash
 pnpm dev        # start dev server
 pnpm build      # production build
-pnpm generate   # static site generation
 pnpm preview    # preview production build
+pnpm generate   # static site generation
 ```
 
 Always use `pnpm` — never `npm` or `yarn`.
 
-## Architecture
+## Project
 
-### Demo system
+Texelation is a portfolio/services site for creative and immersive web development/design. Every detail matters — micro-interactions, transitions, and animations must be polished and smooth. VR support is planned for the future. The home page will eventually support multiple distinct visual experiences built on the same data.
 
-The core pattern of this project is a **demo viewer**. Each demo is:
+Focus is on the main page (`app/pages/index.vue`) and its sections. The demos section is not in active use.
 
-1. A markdown file in `content/demos/<name>.md` — rendered in the right sidebar via `ContentRenderer`
-2. A Vue component in `app/components/demos/<name>.vue` — loaded dynamically and rendered as the main canvas/view
-3. The route `app/pages/demos/[...slug].vue` ties them together: it fetches the content by path, dynamically imports `components/demos/<stem>.vue`, and passes the content page to `useState("demo-page")` so the `demos` layout can render it in the sidebar
+## Stack & Conventions
 
-The `demos` layout (`app/layouts/demos.vue`) provides the split-panel shell: a collapsible right sidebar (Nuxt UI `USidebar`) showing the markdown content, and a main area rendering the demo component via `<slot>`.
-
-When the sidebar opens/closes, `sidebarKey` (a global `useState`) is incremented after the CSS transition finishes (300ms delay). TresCanvas components must be keyed with `:key="sidebarKey"` to force a remount and recalculate their dimensions.
-
-### 3D / WebGL (TresJS)
-
-- TresJS is registered via `@tresjs/nuxt` — `Tres*` components are auto-imported
-- `@tresjs/cientos` provides helpers like `useTextures`
-- GLSL shader files (`.glsl`) are handled by `vite-plugin-glsl` (configured in `nuxt.config.ts`)
-- TresCanvas must live inside a container with **explicit pixel dimensions** (not derived from its children) to avoid infinite resize loops. Use `h-screen`, `h-full` on a fixed-height parent, or similar
-- When stacking HTML over a TresCanvas, use a wrapper `div` with `style="z-index: 0"` around TresCanvas rather than applying Tailwind z-index classes directly to `<TresCanvas>` — those don't reliably reach the internal canvas element
-
-### Shader/image transition pattern
-
-`app/components/image-transitions/hero.vue` is the reference implementation for the image-transition effect:
-- Orthographic camera (`[-8, 8, 4.5, -4.5, -1, 10]`) + a `[16, 9]` plane fills the canvas in exact 16:9
-- A `ShaderMaterial` with `texture1`, `texture2`, `progress`, `intensity`, `resolution` uniforms drives the transition
-- `resize()` recalculates the `resolution` uniform (cover math) and must be called both after textures load and on window resize via `watch([width, height], ...)`
-- `swapShader()` swaps `fragmentShader` at runtime and sets `material.needsUpdate = true`
-- Shaders live in `app/components/image-transitions/shaders/`
-
-### Content (Nuxt Content v3)
-
-- Single collection `content` sourcing `**` (all files under `content/`)
-- MDC syntax: use `::component-name\n::` blocks to embed Vue components in markdown
-- Component names in MDC map to the auto-import convention: `app/components/image-transitions/tweakpane.vue` → `::image-transitions-tweakpane`
-
-### State management
-
-- `useState` (Nuxt built-in) is used for simple cross-component state like `sidebarKey` and `demo-page`
-- Pinia (`@pinia/nuxt`) is installed for more complex stores; place stores in `app/stores/`
+### General
+- **TypeScript** by default — no plain `.js` files
+- **Vue Composition API** always (`<script setup lang="ts">`)
+- **Nuxt folder structure**: folders lowercase, files camelCase (e.g. `homeHeroSection.vue`)
 
 ### Styling
+- **Tailwind CSS v4** — prefer utility classes over custom CSS
+- Config is CSS-based via `@theme` in `app/assets/css/main.css` (no `tailwind.config.ts`)
+- Custom tokens: `--color-white: #f7f7f7`, `--color-black: #0d0d0d`
+- Greyscale palette with opacity utilities (`text-white/70`, `bg-black/30`)
+- **NuxtUI** for components unless a custom component is specified
 
-- Tailwind CSS v4
-- `@nuxt/ui` provides the component library (buttons, sidebar, etc.)
-- All UI uses greyscale palette with white/opacity utilities (`text-white/70`, `bg-black/30`, etc.)
-- USE nuxtUI components by default
+### Animation
+- **GSAP** for all animations and scroll-driven effects
+- GSAP plugin (`app/plugins/gsap.client.ts`) registers ScrollTrigger and exposes `$gsap` via `useNuxtApp()`
+- Always `import { ScrollTrigger } from 'gsap/ScrollTrigger'` in files that use it directly
+- Call `$gsap.registerPlugin(ScrollTrigger)` in `onMounted` before any ScrollTrigger usage
+- Initialize scroll animations after `await nextTick()` inside `onMounted`
+
+### 3D / WebGL
+- Use **TresJS** (`Tres*` components, auto-imported via `@tresjs/nuxt`) or plain **Three.js**
+- GLSL shaders via `vite-plugin-glsl` — import `.glsl` files directly
+- TresCanvas needs a parent with explicit pixel dimensions to avoid resize loops
+- When layering HTML over TresCanvas, wrap TresCanvas in `<div style="z-index: 0">`
+
+### SEO & Accessibility
+- SEO is critical — use `useSeoMeta` / `useHead` on every page
+- Accessibility (a11y) is required — semantic HTML, ARIA labels, keyboard navigation, sufficient contrast
+
+## Architecture
+
+### Pages & Components
+- Main page: `app/pages/index.vue`
+- Section components live in `app/components/home/` (e.g. `homeHeroSection.vue`, `homeAboutSection.vue`)
+- Shared/reusable components in `app/components/`
+
+### State
+- `useState` (Nuxt built-in) for simple cross-component state
+- Pinia (`@pinia/nuxt`) for complex stores — place in `app/stores/`

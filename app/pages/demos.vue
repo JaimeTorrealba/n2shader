@@ -1,8 +1,11 @@
-<script setup>
-const { data: demos } = await useAsyncData("demos", () =>
-  queryCollection("content").where("path", "LIKE", "/demos/%").all()
-);
+<script setup lang="ts">
+const demos = [
+  { path: '/demos/fancy-bg', title: 'Fancy Backgrounds', img: '/img/forest-one.jpg' },
+  { path: '/demos/fancy-heroes', title: 'Fancy Heroes', img: '/img/ocean-one.jpg' },
+  { path: '/demos/heroes/texture', title: 'Texture Hero', img: '/img/earth-one.jpg' },
+]
 </script>
+
 <template>
   <NuxtPage v-if="$route.path !== '/demos'" />
   <template v-else>

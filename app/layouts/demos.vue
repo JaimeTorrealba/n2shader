@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const open = ref(true);
-const demoPage = useState("demo-page");
 const sidebarKey = useState("sidebar-key", () => 0);
 
 watch(open, () => {
@@ -23,9 +22,7 @@ watch(open, () => {
     >
       <template #header> </template>
 
-      <template #default>
-        <ContentRenderer v-if="demoPage" :value="demoPage" class="content-wrapper" />
-      </template>
+      <template #default> </template>
 
       <template #footer> </template>
     </USidebar>
@@ -74,9 +71,4 @@ watch(open, () => {
   }
 }
 
-.content-wrapper :deep(h1),
-.content-wrapper :deep(h2) {
-  text-align: center;
-  text-wrap: balance;
-}
 </style>

@@ -6,7 +6,6 @@ export default defineNuxtConfig({
     plugins: [glsl()],
   },
   modules: [
-    '@nuxt/content',
     '@nuxt/ui',
     '@tresjs/nuxt',
     '@vueuse/nuxt',

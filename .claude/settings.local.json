@@ -3,7 +3,11 @@
     "allow": [
       "Bash(pnpm add *)",
       "Bash(pnpm list *)",
-      "Bash(pnpm exec *)"
+      "Bash(pnpm exec *)",
+      "Bash(cd /mnt/c/Users/Jaime/Code/Projects/texelation && find . -type f -o -type d | head -100)",
+      "Read(//mnt/c/Users/Jaime/Code/Projects/**)",
+      "Bash(Remove-Item -Recurse -Force \"c:\\\\Users\\\\Jaime\\\\Code\\\\Projects\\\\texelation\\\\content\")",
+      "Bash(Remove-Item -Force \"c:\\\\Users\\\\Jaime\\\\Code\\\\Projects\\\\texelation\\\\content.config.ts\")"
     ]
   }
 }

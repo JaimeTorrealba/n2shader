@@ -58,7 +58,7 @@ onUnmounted(() => { trigger?.kill(); });
 </script>
 
 <template>
-  <section ref="heroSection" class="relative w-full min-h-125 overflow-hidden">
+  <section ref="heroSection" class="relative w-full aspect-video max-h-screen md:max-h-[75vh] overflow-hidden">
     <Transition name="fade">
       <div v-if="!isLoaded" class="absolute inset-0 z-30 bg-black flex items-center justify-center gap-2">
         <span class="w-2 h-2 rounded-full bg-white/40 animate-bounce [animation-delay:-0.3s]" />

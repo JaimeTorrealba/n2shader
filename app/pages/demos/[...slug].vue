@@ -2,27 +2,17 @@
 definePageMeta({ layout: "demos" });
 
 const route = useRoute();
+const slug = Array.isArray(route.params.slug) ? route.params.slug.join('/') : route.params.slug;
 
-const { data: page } = await useAsyncData("page-" + route.path, () => {
-  return queryCollection("content").path(route.path).first();
-});
-
-if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: "Page not found", fatal: true });
-}
-
-const slug = page.value?.stem.split("/").pop();
-const component = defineAsyncComponent(() =>
-  import(`../../components/demos/${slug}/index.vue`).catch(() =>
-    import(`../../components/demos/${slug}.vue`)
-  )
+const demoModules = import.meta.glob("../../components/**/index.vue");
+const componentPath = `../../components/demos/${slug}/index.vue`;
+const component = defineAsyncComponent(
+  () => (demoModules[componentPath] ?? (() => Promise.reject(new Error(`Demo not found: ${componentPath}`))))() as Promise<{ default: Component }>
 );
-
-useState("demo-page", () => page.value);
 </script>
 
 <template>
   <ClientOnly>
-    <component :is="component" v-if="page" />
+    <component :is="component" />
   </ClientOnly>
 </template>
