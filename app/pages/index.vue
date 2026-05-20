@@ -148,7 +148,8 @@ function sectionTransition01(
   const sections = scope.querySelectorAll<HTMLElement>("[data-st-01]");
 
   sections.forEach((section) => {
-    const configuredMode = (section.getAttribute("data-st-01") || "parallax") as TransitionMode;
+    const configuredMode = (section.getAttribute("data-st-01") ||
+      "parallax") as TransitionMode;
     const configuredY = getConfiguredYValue(section, configuredMode, config);
     const opacity = getOpacityValue(section);
     const { mode, y } = resolveTransition(
@@ -289,19 +290,19 @@ onMounted(async () => {
 
 <template>
   <main>
-    <section  class="bg-black"  data-st-01="parallax">
+    <section class="bg-black" data-st-01="parallax">
       <HomeHeroSection />
     </section>
 
-    <section class="bg-white rounded-2xl" >
+    <section class="bg-white rounded-2xl">
       <HomeAboutSection />
     </section>
 
-    <section class="bg-black" data-st-01="pin" >
+    <section class="bg-black" data-st-01="pin">
       <HomeServicesSection />
     </section>
 
-    <section class="bg-white rounded-2xl" >
+    <section class="bg-white rounded-2xl">
       <HomeHowItWorksSection />
     </section>
 
@@ -315,15 +316,17 @@ onMounted(async () => {
 main {
   position: relative;
 }
-h2{
-    font-size: 5rem;
-    text-align: center;
-}
 
 section {
   position: relative;
   min-height: 100vh;
+  padding: 0 2rem;
   z-index: 1;
+  h2 {
+    font-size: 3rem;
+    line-height: 1;
+    text-align: center;
+  }
 }
 
 section[data-st-01]:not([data-st-01="pin"]) {
