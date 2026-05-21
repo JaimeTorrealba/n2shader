@@ -22,6 +22,8 @@ Focus is on the main page (`app/pages/index.vue`) and its sections. The demos se
 ### General
 - **TypeScript** by default — no plain `.js` files
 - **Vue Composition API** always (`<script setup lang="ts">`)
+- `<script setup>` goes **below** `<template>`, never above
+- Prefer **VueUse** composables over raw browser APIs (e.g. `useWindowSize` over `window.innerWidth`, `useResizeObserver` over `new ResizeObserver`)
 - **Nuxt folder structure**: folders lowercase, files camelCase (e.g. `homeHeroSection.vue`)
 
 ### Styling
