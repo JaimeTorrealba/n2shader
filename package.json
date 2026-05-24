@@ -21,7 +21,8 @@
     "nuxt": "^4.4.2",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.2",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "valibot": "^1.4.0"
   },
   "devDependencies": {
     "@vueuse/nuxt": "^14.2.1",

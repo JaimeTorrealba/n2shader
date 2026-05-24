@@ -298,7 +298,7 @@ onMounted(async () => {
       <HomeAboutSection />
     </section>
 
-    <section class="bg-black" data-st-01="pin">
+    <section class="bg-black my-16 md:my-0" data-st-01="pin">
       <HomeServicesSection />
     </section>
 
@@ -332,4 +332,5 @@ section {
 section[data-st-01]:not([data-st-01="pin"]) {
   will-change: transform;
 }
+
 </style>
