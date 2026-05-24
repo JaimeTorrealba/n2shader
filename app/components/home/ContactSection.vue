@@ -1,5 +1,5 @@
 <template>
-  <div aria-labelledby="contact-section-label" class="w-full h-screen py-16 px-6 md:px-12 lg:px-24 flex items-end">
+  <div aria-labelledby="contact-section-label" class="w-full py-16 px-6 md:px-12 lg:px-24 min-h-screen flex items-center">
     <span id="contact-section-label" class="sr-only">Contact and FAQ</span>
 
     <div class="relative z-10 flex w-full flex-col gap-16 lg:flex-row lg:gap-24">

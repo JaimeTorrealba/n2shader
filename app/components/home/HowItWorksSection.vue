@@ -120,6 +120,7 @@ const cards = [
 let st: ScrollTrigger | undefined
 
 watch(activeIndex, (newVal, oldVal) => {
+  $gsap.killTweensOf(sections.value)
   if (sections.value[oldVal]) {
     $gsap.set(sections.value[oldVal], { opacity: 0 })
   }
@@ -162,9 +163,10 @@ onMounted(async () => {
 
       tl.to(contentArea.value, { opacity: 1, duration: 0.5, ease: "power2.out" }, "-=0.1")
 
-      if (sections.value[0]) {
+      const idx = activeIndex.value
+      if (sections.value[idx]) {
         tl.fromTo(
-          sections.value[0],
+          sections.value[idx],
           { opacity: 0, y: 12 },
           { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
           "-=0.2"

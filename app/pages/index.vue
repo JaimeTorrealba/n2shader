@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 const { $gsap } = useNuxtApp();
+const { width } = useWindowSize();
+const isDesktop = computed(() => width.value >= 1024);
 
 type MobileStrategy = "same" | "disable" | "simplify";
 type TransitionMode = "parallax" | "reveal" | "pin" | "none";
@@ -165,6 +167,11 @@ function sectionTransition01(
     }
 
     if (mode === "reveal") {
+      if (width.value < 1024) {
+        resetOverlay(section);
+        return;
+      }
+
       const previousSection = section.previousElementSibling as HTMLElement | null;
       if (!previousSection) return;
 
@@ -281,10 +288,63 @@ function sectionTransition01(
   });
 }
 
+function refreshReveal() {
+  document.querySelectorAll<HTMLElement>('[data-st-01="reveal"]').forEach((section) => {
+    const prev = section.previousElementSibling as HTMLElement | null;
+
+    // Kill only the ScrollTriggers that belong to this reveal pair
+    if (prev) {
+      ScrollTrigger.getAll()
+        .filter((t) => t.vars.trigger === prev)
+        .forEach((t) => t.kill());
+      $gsap.set(prev, { clearProps: "zIndex" });
+    }
+    $gsap.set(section, { clearProps: "position,bottom,zIndex" });
+
+    // Re-apply reveal logic (mirrors the reveal branch in sectionTransition01)
+    if (width.value < 1024 || !prev) return;
+
+    $gsap.set(prev, { zIndex: 1 });
+    $gsap.set(section, { position: "sticky", bottom: 0, zIndex: 0 });
+
+    const y = parseFloat(section.dataset.stY || "0") || 0;
+    const rawOpacity = parseFloat(section.dataset.stOpacity || "");
+    const opacity = Number.isNaN(rawOpacity) ? null : Math.max(0, Math.min(1, rawOpacity));
+
+    if (y === 0 && opacity === null) return;
+
+    const tl = $gsap.timeline({
+      scrollTrigger: {
+        trigger: prev,
+        start: "bottom bottom",
+        end: () => `+=${section.offsetHeight}`,
+        scrub: true,
+      },
+    });
+
+    if (y !== 0) {
+      tl.fromTo(section, { y }, { y: 0, ease: "none", force3D: true }, 0);
+    }
+
+    if (opacity !== null) {
+      const color = section.dataset.stOverlay || "black";
+      let overlay = section.querySelector<HTMLElement>("[data-st-overlay-el]");
+      if (overlay) {
+        $gsap.set(overlay, { opacity });
+        tl.to(overlay, { opacity: 0, ease: "none" }, 0);
+      }
+    }
+  });
+}
+
 onMounted(async () => {
   $gsap.registerPlugin(ScrollTrigger);
   await nextTick();
   sectionTransition01();
+});
+
+watch(isDesktop, () => {
+  refreshReveal();
 });
 </script>
 
