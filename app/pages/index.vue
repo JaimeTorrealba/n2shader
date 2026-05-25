@@ -350,23 +350,23 @@ watch(isDesktop, () => {
 
 <template>
   <main>
-    <section class="bg-black" data-st-01="parallax">
+    <section id="hero" class="bg-black" data-st-01="parallax">
       <HomeHeroSection />
     </section>
 
-    <section class="bg-white rounded-2xl">
+    <section id="about" class="bg-white rounded-2xl" data-nav-light>
       <HomeAboutSection />
     </section>
 
-    <section class="bg-black my-16 md:my-0" data-st-01="pin">
+    <section id="services" class="bg-black my-16 md:my-0" data-st-01="pin">
       <HomeServicesSection />
     </section>
 
-    <section class="bg-white rounded-2xl">
+    <section id="how-it-works" class="bg-white rounded-2xl" data-nav-light>
       <HomeHowItWorksSection />
     </section>
 
-    <section class="bg-black" data-st-01="reveal" data-st-y="0">
+    <section id="contact" class="bg-black" data-st-01="reveal" data-st-y="0">
       <HomeContactSection />
     </section>
   </main>
