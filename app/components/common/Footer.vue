@@ -1,9 +1,11 @@
 <template>
-  <UFooter>
-    <p class="text-white/40 text-sm text-center">
-      &copy; {{ new Date().getFullYear() }} Texelation. All rights reserved.
+  <footer class="relative z-10 bg-black pt-8 pb-28">
+    <p class="text-center text-sm text-white/60">
+      &copy; {{ currentYear }} N2Shader. All rights reserved.
     </p>
-  </UFooter>
+  </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const currentYear = new Date().getFullYear();
+</script>

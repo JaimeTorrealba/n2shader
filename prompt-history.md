@@ -9,3 +9,10 @@
 5. can you check the C:\Users\Jaime\.claude\ I do have a CLAUDE.md why you can't read it?
 6. for now le'ts remove all the routes and component we'll keep only the home page (and it's components of course).
 7. Can you replace my navbar with this: https://vue-bits.dev/components/dock
+
+## Session 2026-09-28
+
+1. let's add the most simple footer all right reserved to n2shader bla bla lba
+2. Let's add a new worth reading accordeon entry; If I can built sites with AI why do I need n2shaders?
+3. move the new worth reading entry to be the first one
+4. on top of the expertise section when less than 768px there is a gab between the black of the section and the previous section (the about) and it look like blueish. This look bad can you fix it

@@ -101,6 +101,11 @@ async function handleSubmit(_event: FormSubmitEvent<Schema>) {
 
 const faqItems = [
   {
+    label: 'If I can build sites with AI, why do I need n2shader?',
+    icon: 'i-heroicons-cpu-chip',
+    content: `AI is great at producing something that works — and that looks like everything else. What it can't give you is taste, intent, and the hundred small decisions that make a site feel crafted: the easing on a transition, the rhythm of the type, how it behaves on a slow phone. I use AI as a tool too, but you're hiring the judgment behind it — and someone accountable for the result long after launch.`,
+  },
+  {
     label: 'How long does it take?',
     icon: 'i-heroicons-clock',
     content: 'It depends on the scope, but most projects land between 4 and 10 weeks. A simple site can be live in less than a month; a complex interactive experience takes longer. Either way you get a realistic timeline upfront — no surprises.',
