@@ -54,3 +54,5 @@
 
 1. I discover a small bug on medium screen. As we move the navbar to be down, on the screens where the cards are arrange 2 on top and 1 below, the card at the bottom can't be read in its total, it's occluded by the navbar. Can we add padding to the section (the "we're expert at" section)? Another thing is, does the fact that my navbar is pure icons affect a11y? I think it does, can we add a small text below the icons, would that look good? (plan approved: shared dock-clearance token + visible labels, tooltip removed)
 2. on smaller devices (less than 500) this page has an horrible horizontal scroll, we NEED to get rid of it
+3. (pasted the tail of a failed Netlify deploy log: `pnpm run build` exited with code 1, no underlying error shown)
+4. ok (approved: track pnpm-lock.yaml, pin pnpm via packageManager, add .nvmrc)
