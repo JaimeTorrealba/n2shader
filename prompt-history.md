@@ -56,3 +56,4 @@
 2. on smaller devices (less than 500) this page has an horrible horizontal scroll, we NEED to get rid of it
 3. (pasted the tail of a failed Netlify deploy log: `pnpm run build` exited with code 1, no underlying error shown)
 4. ok (approved: track pnpm-lock.yaml, pin pnpm via packageManager, add .nvmrc)
+5. (pasted the tail of the next failed Netlify deploy log, same summary: `pnpm run build` exited 1, still no underlying error) (answered: run pnpm build locally to reproduce)

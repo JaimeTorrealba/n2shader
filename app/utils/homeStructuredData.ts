@@ -1,5 +1,7 @@
-// Relative import (not #shared): unit tests load this file outside Nuxt
-import { BRAND_NAME, HOME_FAQ, HOME_SERVICES, HOME_SUMMARY } from '../../shared/homeContent'
+// Must be #shared, never relative: the server build leaves shared/ to Nitro, and a relative
+// import gets rewritten one folder too high, failing `nuxt build`. vitest.config.ts maps
+// #shared for the unit tests.
+import { BRAND_NAME, HOME_FAQ, HOME_SERVICES, HOME_SUMMARY } from '#shared/homeContent'
 
 // schema.org graph for the home page: who we are, the site, and the FAQ as Q&A.
 // Answer engines read this to describe the studio and quote the answers.
