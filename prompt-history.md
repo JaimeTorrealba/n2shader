@@ -40,3 +40,17 @@
 3. Fantastic I think this is the last one. can you inspect this: https://natureofcode.com/forces/#example-29-n-bodies and replicate the same idea of N body problem, gravitational force? Right now we got 1 medium sphere (controlled by the mouse) and 3 small sphere. let's add 2 more medium spheres and put the mouse sphere as big
 4. no but this is wrong the sphere are acting as rigid body they collide.... this is wrong, on the code that I give to you they just pass trhough each other.... If they collider the effect of the metaball just get lost
 5. The small balls are moving way too fast can we slow them down
+
+## Session 2026-09-30 — hero copy
+
+1. ON the hero we got already sorted the hero scene, but I would like to add some text, remove the "hero" word (that was only for debug) and put N2Shader in an H1 Tag big, semi-bold. then on the next line an h2 tag with (for now) a lorem impsum of 1 paragraph. My question is how do we make it look good without changing the scene on the bg? (answered: top-left editorial layout, keep h2)
+2. run an animation on entrance before please
+3. /verify
+4. ok we need to fix all this. First add useSeoMeta Content. Second you need to set up the lint, type and test... then run them again (you don't need to build it again we already know is working. Answer to this questions: What font do we have on the site? Why and where are we using tailwind? Is this site ally friendly? Is this site SEO good? Is this site AEO good?
+5. Thanks for the very good report, ok I read them and I think you can fix most of them right? the SEO the AEO (add a llm.txt and a full-llm.txt, also the home page should serve a index.md to agents this is done by cathing the request using netlify) and the Ally. (answered: keep hero intro but trim it; leave the contact form backend for later)
+6. (mid-task) I have added the "Sentient-Bold.woff2" and "Sentient-Regular.woff2" can you set that as a font please
+
+## Session 2026-09-30 — dock clearance & labels
+
+1. I discover a small bug on medium screen. As we move the navbar to be down, on the screens where the cards are arrange 2 on top and 1 below, the card at the bottom can't be read in its total, it's occluded by the navbar. Can we add padding to the section (the "we're expert at" section)? Another thing is, does the fact that my navbar is pure icons affect a11y? I think it does, can we add a small text below the icons, would that look good? (plan approved: shared dock-clearance token + visible labels, tooltip removed)
+2. on smaller devices (less than 500) this page has an horrible horizontal scroll, we NEED to get rid of it

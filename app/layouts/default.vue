@@ -1,7 +1,10 @@
 <script lang="ts" setup></script>
 
 <template>
-  <CommonNavbar />
-  <slot />
-  <CommonFooter />
+  <div>
+    <!-- Single root: Nuxt layouts need one for layout transitions -->
+    <CommonNavbar />
+    <slot />
+    <CommonFooter />
+  </div>
 </template>

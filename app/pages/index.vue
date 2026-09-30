@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+useHomeSeo();
+
 const { $gsap } = useNuxtApp();
 const { width } = useWindowSize();
 const isDesktop = computed(() => width.value >= 1024);
@@ -17,6 +20,8 @@ interface TransitionConfig {
   revealY: number;
   overlayColor: string;
   mobile: MobileConfig;
+  // prefers-reduced-motion: y motion is simplified on every viewport, like the mobile "simplify" strategy
+  reduceMotion: boolean;
 }
 
 type ConfigOverrides = Partial<Omit<TransitionConfig, "mobile">> & {
@@ -35,6 +40,7 @@ function sectionTransition01(
       breakpoint: 768,
       strategy: "simplify",
     },
+    reduceMotion: false,
   };
 
   const isScope = (value: unknown): value is Element | Document =>
@@ -126,9 +132,9 @@ function sectionTransition01(
     mode: TransitionMode,
     y: number,
     strategy: MobileStrategy,
-    isMobile: boolean
+    needsSimplerMotion: boolean
   ): { mode: TransitionMode; y: number } => {
-    if (!isMobile || strategy === "same" || !hasYMotion(mode, y)) {
+    if (!needsSimplerMotion || strategy === "same" || !hasYMotion(mode, y)) {
       return { mode, y };
     }
 
@@ -147,6 +153,9 @@ function sectionTransition01(
   const config = getConfig(isScope(scopeOrConfig) ? maybeConfig : scopeOrConfig);
   const mobileStrategy = getMobileStrategy(config);
   const isMobile = isMobileViewport(config);
+  // Reduced motion always simplifies (parallax becomes a still pin), whatever the mobile strategy
+  const motionStrategy: MobileStrategy = config.reduceMotion ? "simplify" : mobileStrategy;
+  const needsSimplerMotion = isMobile || config.reduceMotion;
   const sections = scope.querySelectorAll<HTMLElement>("[data-st-01]");
 
   sections.forEach((section) => {
@@ -157,8 +166,8 @@ function sectionTransition01(
     const { mode, y } = resolveTransition(
       configuredMode,
       configuredY,
-      mobileStrategy,
-      isMobile
+      motionStrategy,
+      needsSimplerMotion
     );
 
     if (mode === "none") {
@@ -327,8 +336,7 @@ function refreshReveal() {
     }
 
     if (opacity !== null) {
-      const color = section.dataset.stOverlay || "black";
-      let overlay = section.querySelector<HTMLElement>("[data-st-overlay-el]");
+      const overlay = section.querySelector<HTMLElement>("[data-st-overlay-el]");
       if (overlay) {
         $gsap.set(overlay, { opacity });
         tl.to(overlay, { opacity: 0, ease: "none" }, 0);
@@ -337,10 +345,28 @@ function refreshReveal() {
   });
 }
 
+let pageMotion: ReturnType<typeof $gsap.matchMedia> | null = null;
+
 onMounted(async () => {
   $gsap.registerPlugin(ScrollTrigger);
   await nextTick();
-  sectionTransition01();
+
+  pageMotion = $gsap.matchMedia();
+  pageMotion.add(
+    {
+      reduceMotion: "(prefers-reduced-motion: reduce)",
+      allowMotion: "(prefers-reduced-motion: no-preference)",
+    },
+    (context) => {
+      const { reduceMotion } = context.conditions as { reduceMotion: boolean };
+      sectionTransition01({ reduceMotion });
+    }
+  );
+});
+
+onBeforeUnmount(() => {
+  pageMotion?.revert();
+  pageMotion = null;
 });
 
 watch(isDesktop, () => {
@@ -350,23 +376,31 @@ watch(isDesktop, () => {
 
 <template>
   <main>
-    <section id="hero" class="bg-black" data-st-01="parallax">
+    <!-- tabindex="-1": the dock moves focus to the section it scrolls to (not a tab stop, so no outline) -->
+    <section id="hero" tabindex="-1" class="bg-black focus:outline-none" data-st-01="parallax">
       <HomeHeroSection />
     </section>
 
-    <section id="about" class="bg-white rounded-2xl" data-nav-light>
+    <section id="about" tabindex="-1" class="bg-white rounded-2xl focus:outline-none" data-nav-light>
       <HomeAboutSection />
     </section>
 
-    <section id="services" class="bg-black my-16 md:my-0" data-st-01="pin">
+    <section id="services" tabindex="-1" class="bg-black my-16 md:my-0 focus:outline-none" data-st-01="pin">
       <HomeServicesSection />
     </section>
 
-    <section id="how-it-works" class="bg-white rounded-2xl" data-nav-light>
+    <section id="how-it-works" tabindex="-1" class="bg-white rounded-2xl focus:outline-none" data-nav-light>
       <HomeHowItWorksSection />
     </section>
 
-    <section id="contact" class="bg-black" data-st-01="reveal" data-st-y="0">
+    <section
+      id="contact"
+      tabindex="-1"
+      aria-label="Contact and FAQ"
+      class="bg-black focus:outline-none"
+      data-st-01="reveal"
+      data-st-y="0"
+    >
       <HomeContactSection />
     </section>
   </main>
@@ -375,6 +409,9 @@ watch(isDesktop, () => {
 <style>
 main {
   position: relative;
+  /* Safety net against sideways scroll on phones. clip, not hidden: hidden would make main a
+     scroll container and break the contact section's sticky reveal. */
+  overflow-x: clip;
 }
 
 section {

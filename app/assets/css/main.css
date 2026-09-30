@@ -1,11 +1,37 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* Sentient ships in two weights: 400 for text, 700 for headings (font-semibold resolves to 700).
+   Both are preloaded in nuxt.config.ts; the hero intro waits for them before splitting its text. */
+@font-face {
+  font-family: "Sentient";
+  src: url("/Sentient-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sentient";
+  src: url("/Sentient-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
+  --font-serif: "Sentient", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  /* Site-wide default (html, Nuxt UI components) */
+  --default-font-family: var(--font-serif);
   --color-white: #f7f7f7;
   --color-black: #0d0d0d;
   --color-body-text: #7a7060;
-  --color-primary: #0070F3;
+  /* 4.62:1 on --color-white (AA); only used as text on light sections. #0070F3 was 4.25:1 */
+  --color-primary: #006BE6;
+  /* Soft site-black glow so text stays legible when a chrome ball passes behind it */
+  --text-shadow-halo: 0 0 1.5rem rgb(13 13 13 / 0.7);
+  /* Clearance for the fixed bottom dock (Navbar.vue): 16px offset + 80px dock + breathing room */
+  --spacing-dock: 8rem;
 }
 
 /* NuxtUI paints body with its bluish --ui-bg; any gap between sections (margins, rounded corners) should read as site black */

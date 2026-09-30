@@ -2,7 +2,7 @@
   <div class="card-wrapper">
     <div class="card-inner">
       <div v-if="!image" class="w-full h-48 bg-white/10" />
-      <img v-else :src="image" alt="" class="w-full h-48 object-cover" />
+      <img v-else :src="image" alt="" class="w-full h-48 object-cover" >
       <div class="p-6 flex flex-col gap-4">
         <h3 class="text-xl text-center font-semibold pb-4 min-h-18 flex items-center justify-center">{{ title }}</h3>
         <ul class="list-disc list-inside space-y-1">
@@ -33,6 +33,8 @@ defineProps<{
   display: flex;
   flex-direction: column;
   width: 18rem;
+  /* Narrow phones: shrink to the row instead of pushing the page sideways */
+  max-width: 100%;
   height: 100%;
   border-radius: 1rem;
   padding: 2px;
@@ -56,6 +58,13 @@ defineProps<{
 
 .card-wrapper:hover::before {
   opacity: 1;
+}
+
+/* The glow still shows on hover, it just doesn't spin */
+@media (prefers-reduced-motion: reduce) {
+  .card-wrapper::before {
+    animation: none;
+  }
 }
 
 @keyframes border-spin {

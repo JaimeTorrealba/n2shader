@@ -4,7 +4,8 @@
       <h2 class="py-8 font-semibold">How it works</h2>
     </div>
 
-    <div ref="cardsViewport" class="overflow-hidden">
+    <!-- max-w-full: the row is ~700px of nowrap steps; never let it (or the JS-set width) outgrow the section -->
+    <div ref="cardsViewport" class="max-w-full overflow-hidden">
       <div ref="cardsRow" class="flex items-center gap-6 text-lg">
         <template v-for="(card, i) in cards" :key="card.label">
           <div
@@ -24,7 +25,7 @@
 
     <div ref="contentArea" class="relative w-full max-w-2xl h-40 opacity-0">
       <div
-        v-for="(card, i) in cards"
+        v-for="card in cards"
         :key="card.label"
         ref="sections"
         class="absolute inset-0 flex flex-col gap-3 opacity-0"
@@ -37,11 +38,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from "vue"
+import { ref, watch, onMounted, onBeforeUnmount, nextTick, type Component } from "vue"
 import { useResizeObserver, useWindowSize } from "@vueuse/core"
 import { ArrowRightIcon } from "@heroicons/vue/24/outline"
 import { InboxArrowDownIcon, PencilIcon, CubeTransparentIcon, WrenchScrewdriverIcon } from "@heroicons/vue/24/solid"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { PROCESS_STEPS, type ProcessStepId } from "#shared/homeContent"
 import { showText } from "~/utils/animations"
 
 const { $gsap } = useNuxtApp()
@@ -57,6 +59,20 @@ const activeIndex = ref(0)
 
 const MOBILE_BREAKPOINT = 600
 const { width: windowWidth } = useWindowSize()
+
+const STEP_ICONS: Record<ProcessStepId, Component> = {
+  discuss: InboxArrowDownIcon,
+  agreement: PencilIcon,
+  design: CubeTransparentIcon,
+  aftercare: WrenchScrewdriverIcon,
+}
+
+const cards = PROCESS_STEPS.map((step) => ({ ...step, icon: STEP_ICONS[step.id] }))
+
+// Set by the matchMedia in onMounted: with reduced motion, steps swap without moving
+let isMotionReduced = false
+let howItWorksMotion: ReturnType<typeof $gsap.matchMedia> | null = null
+let stopClampOnResize: (() => void) | null = null
 
 function getVisibleCount(): number {
   return windowWidth.value < MOBILE_BREAKPOINT ? 2 : 3
@@ -87,61 +103,11 @@ function slideRow(index: number) {
   if (!cardsRow.value || windowWidth.value >= MOBILE_BREAKPOINT) return
   const maxShift = cards.length - getVisibleCount()
   const offset = getCardOffset(Math.min(index, maxShift))
-  $gsap.to(cardsRow.value, { x: -offset, duration: 0.4, ease: "power2.out" })
+  $gsap.to(cardsRow.value, { x: -offset, duration: isMotionReduced ? 0 : 0.4, ease: "power2.out" })
 }
 
-const cards = [
-  {
-    label: "Let's discuss",
-    icon: InboxArrowDownIcon,
-    title: "Your adventure start here",
-    description: "After the first contact so we can start understanding your brand and requirements, then the team will send some references and ideas. This guide is free.",
-  },
-  {
-    label: "We're serious now",
-    icon: PencilIcon,
-    title: "Gathering",
-    description: "Once a direction is accepted a contract have to be sign, and for start working we require a 50% of the payment in advance. We start gathering all the information (assets, texts, etc).",
-  },
-  {
-    label: "The exciting!",
-    icon: CubeTransparentIcon,
-    title: "The back and forth",
-    description: "The team send design proposal, this then go back and forth a couple of times. Then in base of the selected design we provide 3 simples website.",
-  },
-  {
-    label: "Post service",
-    icon: WrenchScrewdriverIcon,
-    title: "Post sell",
-    description: "After the project is finish, we still commit with a generous plan of maintain projects.",
-  },
-]
-
-let st: ScrollTrigger | undefined
-
-watch(activeIndex, (newVal, oldVal) => {
-  $gsap.killTweensOf(sections.value)
-  if (sections.value[oldVal]) {
-    $gsap.set(sections.value[oldVal], { opacity: 0 })
-  }
-  if (sections.value[newVal]) {
-    $gsap.fromTo(
-      sections.value[newVal],
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
-    )
-  }
-  slideRow(newVal)
-})
-
-onMounted(async () => {
-  await nextTick()
-  $gsap.registerPlugin(ScrollTrigger)
-
-  clampViewport()
-  useResizeObserver(document.body, clampViewport)
-
-  const heading = container.value?.querySelector<HTMLElement>("h2")
+// Heading, then the step row left to right, then the active description
+const playStepsEntrance = (heading: HTMLElement | null | undefined) => {
   if (heading) $gsap.set(heading, { yPercent: 200 })
   $gsap.set(cardEls.value, { opacity: 0, y: 12 })
   $gsap.set(arrowEls.value, { opacity: 0 })
@@ -174,21 +140,75 @@ onMounted(async () => {
       }
     },
   })
+}
 
-  st = ScrollTrigger.create({
-    trigger: container.value,
-    start: "top top",
-    end: "+=300%",
-    pin: true,
-    scrub: true,
-    onUpdate: (self) => {
-      const index = Math.min(cards.length - 1, Math.floor(self.progress * cards.length))
-      if (index !== activeIndex.value) activeIndex.value = index
-    },
-  })
+watch(activeIndex, (newVal, oldVal) => {
+  $gsap.killTweensOf(sections.value)
+  if (sections.value[oldVal]) {
+    $gsap.set(sections.value[oldVal], { opacity: 0 })
+  }
+  const nextSection = sections.value[newVal]
+  if (nextSection && isMotionReduced) {
+    $gsap.set(nextSection, { opacity: 1, y: 0 })
+  } else if (nextSection) {
+    $gsap.fromTo(
+      nextSection,
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
+    )
+  }
+  slideRow(newVal)
 })
 
-onUnmounted(() => {
-  st?.kill()
+onMounted(async () => {
+  await nextTick()
+  $gsap.registerPlugin(ScrollTrigger)
+
+  clampViewport()
+  stopClampOnResize = useResizeObserver(document.body, clampViewport).stop
+
+  const heading = container.value?.querySelector<HTMLElement>("h2")
+
+  howItWorksMotion = $gsap.matchMedia()
+  howItWorksMotion.add(
+    {
+      reduceMotion: "(prefers-reduced-motion: reduce)",
+      allowMotion: "(prefers-reduced-motion: no-preference)",
+    },
+    (context) => {
+      const { reduceMotion } = context.conditions as { reduceMotion: boolean }
+      isMotionReduced = reduceMotion
+
+      if (reduceMotion) {
+        // No entrance: the step row and the active description are simply there
+        const visibleOnStart = [contentArea.value, sections.value[activeIndex.value]].filter(
+          (el): el is HTMLElement => !!el
+        )
+        $gsap.set(visibleOnStart, { opacity: 1 })
+      } else {
+        playStepsEntrance(heading)
+      }
+
+      // Both modes: the pin only holds the section still while scrolling picks the step
+      ScrollTrigger.create({
+        trigger: container.value,
+        start: "top top",
+        end: "+=300%",
+        pin: true,
+        scrub: true,
+        onUpdate: (self) => {
+          const index = Math.min(cards.length - 1, Math.floor(self.progress * cards.length))
+          if (index !== activeIndex.value) activeIndex.value = index
+        },
+      })
+    }
+  )
+})
+
+// Before unmount: the pin wraps the section in a spacer that must be removed while Vue still owns the DOM
+onBeforeUnmount(() => {
+  howItWorksMotion?.revert()
+  howItWorksMotion = null
+  stopClampOnResize?.()
 })
 </script>

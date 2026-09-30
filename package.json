@@ -6,7 +6,12 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run"
   },
   "dependencies": {
     "@heroicons/vue": "^2.2.0",
@@ -21,8 +26,17 @@
     "valibot": "^1.5.0"
   },
   "devDependencies": {
+    "@netlify/edge-functions": "^4.0.1",
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/test-utils": "^4.3.2",
+    "@vue/test-utils": "^2.5.1",
     "@vueuse/nuxt": "^15.0.0",
     "@webgpu/types": "^0.1.74",
-    "vite-plugin-glsl": "^1.6.1"
+    "eslint": "^10.11.0",
+    "happy-dom": "^20.14.5",
+    "typescript": "^6.0.3",
+    "vite-plugin-glsl": "^1.6.1",
+    "vitest": "^5.0.3",
+    "vue-tsc": "^3.3.11"
   }
 }

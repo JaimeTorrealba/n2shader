@@ -4,33 +4,32 @@
     aria-label="Main navigation"
     class="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-end gap-3 rounded-2xl border-[0.5px] p-2 backdrop-blur-md transition-colors duration-300"
     :class="isLight ? 'bg-black/10 border-black/30' : 'bg-white/10 border-white/60'"
-    :style="{ height: `${BASE_ITEM_SIZE + 16}px` }"
+    :style="{ height: `${BASE_ITEM_SIZE + LABEL_BLOCK_HEIGHT + 16}px` }"
     @pointermove="magnifyItems"
     @pointerleave="resetItems"
   >
+    <!-- The visible label is the link's accessible name, so voice-control users can say what they see -->
     <a
       v-for="link in links"
-      ref="itemRefs"
       :key="link.href"
       :href="link.href"
-      :aria-label="link.label"
-      class="relative flex shrink-0 items-center justify-center rounded-xl border-[0.5px] outline-none transition-colors duration-300 focus-visible:ring-2"
-      :class="isLight
-        ? 'bg-black/5 border-black/20 text-black focus-visible:ring-black'
-        : 'bg-white/10 border-white/30 text-white focus-visible:ring-white'"
-      :style="{ width: `${BASE_ITEM_SIZE}px`, height: `${BASE_ITEM_SIZE}px` }"
+      class="group relative flex shrink-0 flex-col items-center outline-hidden transition-colors duration-300"
+      :class="isLight ? 'text-black' : 'text-white'"
+      :style="{ paddingBottom: `${LABEL_BLOCK_HEIGHT}px` }"
       @click.prevent="scrollToSection(link.href)"
-      @pointerenter="showLabel"
-      @pointerleave="hideLabel"
-      @focus="showLabelOnKeyboardFocus"
-      @blur="hideLabel"
     >
-      <component :is="link.icon" class="size-1/2" aria-hidden="true" />
       <span
-        data-dock-label
-        aria-hidden="true"
-        class="pointer-events-none invisible absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/20 bg-black px-2 py-0.5 text-xs text-white opacity-0"
+        ref="tileRefs"
+        class="flex items-center justify-center rounded-xl border-[0.5px] transition-colors duration-300 group-focus-visible:ring-2"
+        :class="isLight
+          ? 'bg-black/5 border-black/20 group-focus-visible:ring-black'
+          : 'bg-white/10 border-white/30 group-focus-visible:ring-white'"
+        :style="{ width: `${BASE_ITEM_SIZE}px`, height: `${BASE_ITEM_SIZE}px` }"
       >
+        <component :is="link.icon" class="size-1/2" aria-hidden="true" />
+      </span>
+      <!-- Out of flow so a long label doesn't widen its column and unevenly space the tiles -->
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] leading-3">
         {{ link.label }}
       </span>
     </a>
@@ -49,6 +48,8 @@ import {
 const BASE_ITEM_SIZE = 48;
 const MAGNIFIED_ITEM_SIZE = 68;
 const MAGNIFY_RADIUS = 160;
+// Space under each tile for its label: 4px gap + 12px line (leading-3)
+const LABEL_BLOCK_HEIGHT = 16;
 // Distance from the viewport bottom used to sample the section behind the dock
 const THEME_SAMPLE_OFFSET = 40;
 
@@ -64,7 +65,7 @@ const { $gsap } = useNuxtApp();
 const reducedMotion = usePreferredReducedMotion();
 const { width: windowWidth, height: windowHeight } = useWindowSize();
 const dockRef = useTemplateRef<HTMLElement>("dockRef");
-const itemRefs = useTemplateRef<HTMLElement[]>("itemRefs");
+const tileRefs = useTemplateRef<HTMLElement[]>("tileRefs");
 const isLight = ref(false);
 
 type ItemResizer = {
@@ -101,40 +102,19 @@ const resetItems = () => {
   });
 };
 
-const toggleLabel = (item: HTMLElement, isVisible: boolean) => {
-  const label = item.querySelector("[data-dock-label]");
-  if (!label || !gsapContext) return;
-  const shouldMove = isVisible && reducedMotion.value !== "reduce";
-  gsapContext.add(() => {
-    $gsap.to(label, {
-      autoAlpha: isVisible ? 1 : 0,
-      y: shouldMove ? -6 : 0,
-      duration: 0.2,
-      ease: isVisible ? "power3.out" : "power2.in",
-      overwrite: true,
-    });
-  });
-};
-
-const showLabel = (event: Event) => toggleLabel(event.currentTarget as HTMLElement, true);
-const hideLabel = (event: Event) => toggleLabel(event.currentTarget as HTMLElement, false);
-
-// Mouse clicks also focus the link; only keyboard focus should pin the label open
-const showLabelOnKeyboardFocus = (event: FocusEvent) => {
-  const item = event.currentTarget as HTMLElement;
-  if (item.matches(":focus-visible")) toggleLabel(item, true);
-};
+// Keyboard and screen-reader users land in the section too, so the next Tab continues from there
+const focusSection = (section: HTMLElement) => section.focus({ preventScroll: true });
 
 const scrollToSection = (href: string) => {
   const duration = reducedMotion.value === "reduce" ? 0 : 1;
-
-  if (href === "#hero") {
-    $gsap.to(window, { duration, scrollTo: { y: 0 }, ease: "power2.inOut" });
-    return;
-  }
-
   const section = document.querySelector<HTMLElement>(href);
   if (!section) return;
+  const onComplete = () => focusSection(section);
+
+  if (href === "#hero") {
+    $gsap.to(window, { duration, scrollTo: { y: 0 }, ease: "power2.inOut", onComplete });
+    return;
+  }
 
   let targetY: number;
   if (getComputedStyle(section).position === "sticky") {
@@ -148,7 +128,7 @@ const scrollToSection = (href: string) => {
     targetY = anchor.getBoundingClientRect().top + window.scrollY;
   }
 
-  $gsap.to(window, { duration, scrollTo: { y: targetY }, ease: "power2.inOut" });
+  $gsap.to(window, { duration, scrollTo: { y: targetY }, ease: "power2.inOut", onComplete });
 };
 
 // Hit-test the stack behind the dock so pinned, sticky and revealed sections all resolve correctly
@@ -166,7 +146,7 @@ watch([windowWidth, windowHeight], updateIsLight);
 
 onMounted(() => {
   gsapContext = $gsap.context(() => {
-    itemResizers = (itemRefs.value ?? []).map((el) => ({
+    itemResizers = (tileRefs.value ?? []).map((el) => ({
       el,
       setWidth: $gsap.quickTo(el, "width", { duration: 0.35, ease: "power3.out" }),
       setHeight: $gsap.quickTo(el, "height", { duration: 0.35, ease: "power3.out" }),

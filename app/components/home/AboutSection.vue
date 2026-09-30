@@ -19,10 +19,11 @@ import { SplitText } from "gsap/SplitText";
 const { $gsap } = useNuxtApp();
 const container = ref<HTMLElement | null>(null);
 
+let aboutMotion: ReturnType<typeof $gsap.matchMedia> | null = null;
+
 onMounted(async () => {
   await nextTick();
   $gsap.registerPlugin(ScrollTrigger, SplitText);
-  const master = $gsap.timeline();
 
   const el = container.value;
   if (!el) return;
@@ -32,28 +33,38 @@ onMounted(async () => {
 
   if (!heading || !body) return;
 
-  const splitBody = new SplitText(body, { type: "chars" });
+  aboutMotion = $gsap.matchMedia();
+  // Reduced motion gets no reveal: the heading and text are simply there
+  aboutMotion.add("(prefers-reduced-motion: no-preference)", () => {
+    const master = $gsap.timeline();
+    const splitBody = new SplitText(body, { type: "chars" });
 
-  $gsap.set(splitBody.chars, { color: "#f7f7f7" });
-  $gsap.set(heading, { yPercent: 200 });
+    $gsap.set(splitBody.chars, { color: "#f7f7f7" });
+    $gsap.set(heading, { yPercent: 200 });
 
-  ScrollTrigger.create({
-    trigger: el,
-    start: "top 50%",
-    once: true,
-    onEnter: () => {
-      master.add(showText(heading)).to(
-        splitBody.chars,
-        {
-          color: "#7a7060",
-          ease: "Power4.out",
-          stagger: 0.015,
-          duration: 0.5,
-          onComplete: () => splitBody.revert(),
-        },
-        "-=0.25"
-      );
-    },
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top 50%",
+      once: true,
+      onEnter: () => {
+        master.add(showText(heading)).to(
+          splitBody.chars,
+          {
+            color: "#7a7060",
+            ease: "Power4.out",
+            stagger: 0.015,
+            duration: 0.5,
+            onComplete: () => splitBody.revert(),
+          },
+          "-=0.25"
+        );
+      },
+    });
   });
+});
+
+onBeforeUnmount(() => {
+  aboutMotion?.revert();
+  aboutMotion = null;
 });
 </script>
